@@ -1,0 +1,32 @@
+# Compiled executables
+*.exe
+miniSQL
+lexer
+test_lexer
+
+# Generated files
+lex.yy.c
+lex.yy.cc
+parser.tab.c
+parser.tab.cc
+parser.tab.h
+parser.tab.hh
+
+# Temporary files
+query.sql
+*.o
+*.obj
+
+# Upload directory
+uploads/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE files
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

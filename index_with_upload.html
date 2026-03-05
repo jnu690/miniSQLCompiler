@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini-SQL Query Interface</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+  }
+  
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .subtitle {
+    font-size: 1.1em;
+    opacity: 0.9;
+  }
+  
+  .main-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    padding: 30px;
+    margin-bottom: 20px;
+  }
+  
+  .query-section {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    resize: vertical;
+    transition: border-color 0.3s;
+  }
+  
+  textarea:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    flex: 1;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  }
+  
+  .btn-secondary {
+    background: #f0f0f0;
+    color: #666;
+  }
+  
+  .btn-secondary:hover {
+    background: #e0e0e0;
+  }
+  
+  .file-upload-section {
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+  
+  .file-upload-section:hover {
+    border-color: #667eea;
+    background: #f0f2ff;
+  }
+  
+  .file-upload-section input[type="file"] {
+    display: none;
+  }
+  
+  .upload-label {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #667eea;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  
+  .upload-label:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+  }
+  
+  .file-name {
+    margin-top: 10px;
+    color: #667eea;
+    font-weight: 600;
+  }
+  
+  .examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .example-btn {
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .example-btn:hover {
+    background: #e9ecef;
+    border-color: #667eea;
+  }
+  
+  .output-section {
+    margin-top: 20px;
+  }
+  
+  .output-box {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre;
+    line-height: 1.6;
+  }
+  
+  .info-box {
+    background: #e7f3ff;
+    border-left: 4px solid #2196F3;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  
+  .info-box h3 {
+    color: #1976D2;
+    margin-bottom: 8px;
+  }
+  
+  .info-box p {
+    color: #555;
+    line-height: 1.6;
+  }
+  
+  .alert {
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
+  
+  .alert-success {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    color: #155724;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🗄️ Mini-SQL Query Interface</h1>
+    <p class="subtitle">Lexical Analyzer & SQL Compiler for CSV Files</p>
+  </header>
+
+  <div class="main-card">
+    <div class="alert alert-success">
+      <strong>✅ File Upload Enabled!</strong> Upload your CSV file and run queries directly.
+    </div>
+
+    <div class="info-box">
+      <h3>📋 How to Use</h3>
+      <p>
+        1. Upload your CSV file below<br>
+        2. Write your SQL query (use the uploaded filename)<br>
+        3. Click "Run Query" to see results
+      </p>
+    </div>
+
+    <!-- File Upload Section -->
+    <div class="file-upload-section">
+      <label for="csvFile" class="upload-label">📁 Choose CSV File</label>
+      <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(event)">
+      <div class="file-name" id="fileName">No file selected</div>
+    </div>
+
+    <div class="query-section">
+      <label>SQL Query:</label>
+      <textarea id="queryInput" rows="5" placeholder="SELECT * FROM your_file.csv WHERE column > value;">SELECT * FROM uploaded.csv;</textarea>
+      
+      <div class="button-group">
+        <button class="btn-primary" onclick="runQuery()">▶ Run Query</button>
+        <button class="btn-secondary" onclick="clearQuery()">Clear</button>
+      </div>
+    </div>
+
+    <div class="query-section">
+      <label>Example Queries (for uploaded file):</label>
+      <div class="examples">
+        <button class="example-btn" onclick="loadExample(1)">📊 Select All Records</button>
+        <button class="example-btn" onclick="loadExample(2)">🔍 Filter by Numeric Column</button>
+        <button class="example-btn" onclick="loadExample(3)">🎯 Multiple Conditions (AND)</button>
+        <button class="example-btn" onclick="loadExample(4)">⚡ OR Condition</button>
+      </div>
+    </div>
+
+    <div class="output-section">
+      <label>Query Output:</label>
+      <div class="output-box" id="output">Upload a CSV file and run a query to see results...</div>
+    </div>
+  </div>
+
+  <div class="main-card" style="margin-top: 20px;">
+    <h3 style="margin-bottom: 15px;">🎓 Project Features</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+      <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <strong>✅ Lexical Analysis</strong>
+        <p style="margin-top: 5px; color: #666; font-size: 14px;">Tokenizes SQL keywords, identifiers, operators, and literals using Flex</p>
+      </div>
+      <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <strong>✅ Syntax Analysis</strong>
+        <p style="margin-top: 5px; color: #666; font-size: 14px;">Validates SQL grammar with LALR parser using Bison</p>
+      </div>
+      <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <strong>✅ Query Execution</strong>
+        <p style="margin-top: 5px; color: #666; font-size: 14px;">Processes CSV files and evaluates WHERE conditions</p>
+      </div>
+      <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <strong>✅ File Upload</strong>
+        <p style="margin-top: 5px; color: #666; font-size: 14px;">Direct CSV upload without typing file paths</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let uploadedFileName = '';
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (file) {
+    // Clean the filename for display
+    let cleanName = file.name;
+    // Remove special characters, keep only alphanumeric, underscore, hyphen, dot
+    cleanName = cleanName.replace(/[^\w\-.]/g, '_');
+    // Remove multiple consecutive underscores
+    cleanName = cleanName.replace(/_+/g, '_');
+    // Remove leading/trailing underscores before the extension
+    cleanName = cleanName.replace(/_+\./g, '.');
+    cleanName = cleanName.replace(/^_+/, '');
+    
+    uploadedFileName = cleanName;
+    
+    // Show both original and cleaned name if different
+    if (file.name !== cleanName) {
+      document.getElementById('fileName').innerHTML = 
+        `✓ ${file.name}<br><small style="color: #666;">Will be saved as: ${cleanName}</small>`;
+    } else {
+      document.getElementById('fileName').textContent = `✓ ${cleanName}`;
+    }
+    
+    document.getElementById('queryInput').value = `SELECT * FROM "${cleanName}";`;
+  }
+}
+
+function loadExample(num) {
+  if (!uploadedFileName) {
+    alert('Please upload a CSV file first!');
+    return;
+  }
+  
+  const examples = {
+    1: `SELECT * FROM "${uploadedFileName}";`,
+    2: `SELECT * FROM "${uploadedFileName}" WHERE age > 50;`,
+    3: `SELECT * FROM "${uploadedFileName}" WHERE age > 30 AND age < 60;`,
+    4: `SELECT * FROM "${uploadedFileName}" WHERE age < 20 OR age > 70;`
+  };
+  
+  document.getElementById('queryInput').value = examples[num];
+  runQuery();
+}
+
+function clearQuery() {
+  document.getElementById('queryInput').value = '';
+  document.getElementById('output').textContent = 'Upload a CSV file and run a query to see results...';
+}
+
+async function runQuery() {
+  const query = document.getElementById('queryInput').value.trim();
+  const output = document.getElementById('output');
+  const fileInput = document.getElementById('csvFile');
+  
+  if (!query) {
+    output.textContent = '❌ Error: Please enter a query';
+    return;
+  }
+  
+  if (!fileInput.files || fileInput.files.length === 0) {
+    output.textContent = '❌ Error: Please upload a CSV file first';
+    return;
+  }
+  
+  output.textContent = '⏳ Uploading file and executing query...';
+  
+  try {
+    // Create FormData with both file and query
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('query', query);
+    
+    const response = await fetch('http://localhost:5000/upload', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (data.error) {
+      output.textContent = '❌ Error: ' + data.error;
+    } else {
+      output.textContent = data.output;
+    }
+    
+  } catch (error) {
+    output.textContent = '❌ Connection Error\n\n' +
+                        'Make sure the Python server is running!\n' +
+                        'Run in terminal: python server.py';
+  }
+}
+</script>
+
+</body>
+</html>
